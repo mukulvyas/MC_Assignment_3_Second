@@ -225,31 +225,33 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Column {
-                        Button(onClick = { openCamera() }) {
-                            Text("Open Camera")
-                        }
+                    DisplayResult(::openCamera, ::openGallery, imageBitmap, inferenceResult, probabilities, maxProbIndex)
 
-                        Button(onClick = { openGallery() }) {
-                            Text("Open Gallery")
-                        }
-                        imageBitmap?.let { bitmap ->
-                            Image(
-                                painter = BitmapPainter(bitmap.asImageBitmap()),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                        }
-
-                        probabilities.forEachIndexed { index, probability ->
-                            Text("Probability of class $index: $probability")
-                        }
-                        Text("Class with highest probability: $maxProbIndex")
-
-                        Log.d("InferenceResult", "onCreate: $inferenceResult")
-                        Text(inferenceResult)
-                    }
+//                    Column {
+//                        Button(onClick = { openCamera() }) {
+//                            Text("Open Camera")
+//                        }
+//
+//                        Button(onClick = { openGallery() }) {
+//                            Text("Open Gallery")
+//                        }
+//                        imageBitmap?.let { bitmap ->
+//                            Image(
+//                                painter = BitmapPainter(bitmap.asImageBitmap()),
+//                                contentDescription = null,
+//                                modifier = Modifier.fillMaxSize()
+//                            )
+//
+//                        }
+//
+//                        probabilities.forEachIndexed { index, probability ->
+//                            Text("Probability of class $index: $probability")
+//                        }
+//                        Text("Class with highest probability: $maxProbIndex")
+//
+//                        Log.d("InferenceResult", "onCreate: $inferenceResult")
+//                        Text(inferenceResult)
+//                    }
                 }
             }
         }
@@ -389,6 +391,32 @@ class MainActivity : ComponentActivity() {
 //    }
 
 
+@Composable
+fun DisplayResult(openCamera: () -> Unit, openGallery: () -> Unit, imageBitmap: Bitmap?, inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int) {
+    Column {
+        Button(onClick = { openCamera() }) {
+            Text("Open Camera")
+        }
 
+        Button(onClick = { openGallery() }) {
+            Text("Open Gallery")
+        }
+        imageBitmap?.let { bitmap ->
+            Image(
+                painter = BitmapPainter(bitmap.asImageBitmap()),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
+        probabilities.forEachIndexed { index, probability ->
+            Text("Probability of class $index: $probability")
+        }
+        Text("Class with highest probability: $maxProbIndex")
+
+        Log.d("InferenceResult", "onCreate: $inferenceResult")
+        Text(inferenceResult)
+    }
+
+}
 
