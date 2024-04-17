@@ -107,7 +107,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -120,6 +124,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.nnimage.ui.theme.NNImageTheme
@@ -401,22 +406,29 @@ fun DisplayResult(openCamera: () -> Unit, openGallery: () -> Unit, imageBitmap: 
         Button(onClick = { openGallery() }) {
             Text("Open Gallery")
         }
-        imageBitmap?.let { bitmap ->
-            Image(
-                painter = BitmapPainter(bitmap.asImageBitmap()),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
 
-        probabilities.forEachIndexed { index, probability ->
-            Text("Probability of class $index: $probability")
-        }
-        Text("Class with highest probability: $maxProbIndex")
+        Row {
+            imageBitmap?.let { bitmap ->
+                Image(
+                    painter = BitmapPainter(bitmap.asImageBitmap()),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                )
+            }
 
-        Log.d("InferenceResult", "onCreate: $inferenceResult")
-        Text(inferenceResult)
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                probabilities.forEachIndexed { index, probability ->
+                    Text("Probability of class $index: $probability")
+                }
+                Text("Class with highest probability: $maxProbIndex")
+
+                Log.d("InferenceResult", "onCreate: $inferenceResult")
+                //Text(inferenceResult)
+            }
+        }
     }
-
 }
-
