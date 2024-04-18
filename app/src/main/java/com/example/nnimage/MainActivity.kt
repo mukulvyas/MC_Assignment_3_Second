@@ -1,5 +1,8 @@
 package com.example.nnimage
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 
 import android.Manifest // Add this import
 import android.annotation.SuppressLint
@@ -55,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.nnimage.Screen.DisplayResult
 import com.example.nnimage.ui.theme.NNImageTheme
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
@@ -243,7 +247,7 @@ class MainActivity : ComponentActivity() {
                 // Process the result array here
                 probabilities = result[0].toList()
 
-                maxProbIndex = result[0].indices.maxByOrNull { result[0][it] } ?: -1
+                maxProbIndex = result[0].indices.maxByOrNull { result[0][it] }!!
                 // maxProbIndex is the index of the class with the highest probability
 
             }
@@ -253,128 +257,152 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun DisplayResult(openCamera: () -> Unit, openGallery: () -> Unit, imageBitmap: Bitmap?, inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int ) {
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.LightGray),
-                title = { Text("NN Image") },
-                actions = {
-                    IconButton(onClick = { /* Handle click */ }) {
-                        Icon(Icons.Default.Favorite, contentDescription = "Favorite")
-                    }
-                }
-            )
-        }
-    ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-
-        ) {
-
-            Box(modifier = Modifier.fillMaxWidth(),
-                contentAlignment = androidx.compose.ui.Alignment.Center) {
-                Button( modifier = Modifier.padding(top = 150.dp),
-
-                    onClick = { openCamera() }
-                ) {
-                    Text("Open Camera")
-                }
-
-                Button(
-
-                   onClick = { openGallery() }
-                ) {
-                    Text("Open Gallery")
-                }
-            }
-
-
-
-           CardList(
-                imageBitmap,inferenceResult,
-               probabilities,
-               maxProbIndex
-          )
-
-        }
-    }
-
-}
-//fun CardList(imageBitmap: Bitmap?,inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int)
-@Composable
-fun CardList(imageBitmap: Bitmap?,inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int) {
-    val labels = listOf(
-        "Apple",
-        "Banana",
-        "Cherry",
-        "Chickoo",
-        "Grapes",
-        "Kiwi",
-        "Mango",
-        "Orange",
-        "Strawberry"
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(15.dp),
-
-        shape = RoundedCornerShape(corner = CornerSize(15.dp)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    )
-    {
-        Row(modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
-            imageBitmap?.let { bitmap ->
-                Image(
-                    painter = BitmapPainter(bitmap.asImageBitmap()),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                )
-
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
-
-            probabilities.mapIndexed { index, probability -> Pair(index, probability) }
-        .sortedByDescending { it.second }.take(3)
-        .forEachIndexed { predictionIndex, (index, probability) ->
-            val percentage = probability * 100
-            OutlinedTextField(
-                value = "${labels[index]}: ${String.format("%.2f", percentage)}%",
-                onValueChange = {},
-                label = { Text("Prediction ${predictionIndex + 1}") },
-                readOnly = true
-            )
-    }
-                OutlinedTextField(
-                    value = if (maxProbIndex in labels.indices) labels[maxProbIndex] else "N/A",
-                    onValueChange = {},
-                    label = { Text("Fruit") },
-                    readOnly = true
-                )
-                Log.d("InferenceResult", "onCreate: $inferenceResult")
-                //Text(inferenceResult)
-            }
-        }
-    }
-}
-
+//
+//@OptIn(ExperimentalMaterial3Api::class)
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+//@Composable
+//fun DisplayResult(openCamera: () -> Unit, openGallery: () -> Unit, imageBitmap: Bitmap?, inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int ) {
+//
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                containerColor = Color.LightGray),
+//                title = { Text("NN Image") },
+//                actions = {
+//                    IconButton(onClick = { /* Handle click */ }) {
+//                        Icon(Icons.Default.Favorite, contentDescription = "Favorite")
+//                    }
+//                }
+//            )
+//        }
+//    ) {
+//        Column(modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight()
+//
+//        ) {
+//
+//            Box(modifier = Modifier.fillMaxWidth(),
+//                contentAlignment = androidx.compose.ui.Alignment.Center) {
+//                Button( modifier = Modifier.padding(top = 150.dp),
+//
+//                    onClick = { openCamera() }
+//                ) {
+//                    Text("Open Camera")
+//                }
+//
+//                Button(
+//
+//                   onClick = { openGallery() }
+//                ) {
+//                    Text("Open Gallery")
+//                }
+//            }
+//
+//
+//
+//           CardList(
+//                imageBitmap,inferenceResult,
+//               probabilities,
+//               maxProbIndex
+//          )
+//
+//        }
+//    }
+//
+//}
+////fun CardList(imageBitmap: Bitmap?,inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int)
+//@Composable
+//fun CardList(imageBitmap: Bitmap?,inferenceResult: String, probabilities: List<Float>, maxProbIndex: Int) {
+//    val labels = listOf(
+//        "Apple",
+//        "Banana",
+//        "Cherry",
+//        "Chickoo",
+//        "Grapes",
+//        "Kiwi",
+//        "Mango",
+//        "Orange",
+//        "Strawberry"
+//    )
+//
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight()
+//            .padding(15.dp),
+//
+//        shape = RoundedCornerShape(corner = CornerSize(15.dp)),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+//    )
+//    {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth() // Fill the maximum width available
+//                .weight(1f), // Take up half of the available space
+//            horizontalArrangement = Arrangement.Center
+//        ) {
+//            imageBitmap?.let { bitmap ->
+//                Image(
+//                    painter = BitmapPainter(bitmap.asImageBitmap()),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                        .weight(1f)
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.width(16.dp))
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth() // Fill the maximum width available
+//                .weight(1f) // Take up half of the available space
+//                .verticalScroll(rememberScrollState()),
+//            verticalArrangement = Arrangement.Center,// Make the column scrollable
+//        ) {
+//            probabilities.mapIndexed { index, probability -> Pair(index, probability) }
+//                .sortedByDescending { it.second }.take(3)
+//                .windowed(2, 2, true) // Group predictions into pairs
+//                .forEachIndexed { rowIndex, predictionPair ->
+//                    Row { // Create a row for each pair of predictions
+//                        predictionPair.forEachIndexed { predictionIndex, (index, probability) ->
+//                            val percentage = probability * 100
+//                            OutlinedTextField(
+//                                value = "${labels[index]}: ${String.format("%.2f", percentage)}%",
+//                                onValueChange = {},
+//                                label = { Text("Prediction ${rowIndex * 2 + predictionIndex + 1}") },
+//                                readOnly = true,
+//                                modifier = Modifier
+//                                    .weight(1f) // Each TextField takes up half of the available width
+//                                    .padding(8.dp) // Add padding around the text field
+//                            )
+//                        }
+//                    }
+//                }
+//
+//            Row( modifier = Modifier,
+//                horizontalArrangement = Arrangement.Center, // Center the content horizontally
+//                verticalAlignment = Alignment.CenterVertically,
+//                ){// Center the content vertically            ) { // Create a row for the fruit prediction
+//                OutlinedTextField(
+//                    value = if (maxProbIndex in labels.indices) labels[maxProbIndex] else "N/A",
+//                    onValueChange = {},
+//                    label = { Text("Fruit") },
+//                    readOnly = true,
+//                    modifier = Modifier
+//                        .width(200.dp)
+//                      //  .weight(1f) // The TextField takes up half of the available width
+//                        .padding(8.dp) // Add padding around the text field
+//                )
+//                Spacer(Modifier.weight(1f)) // Add a spacer to fill the remaining space
+//            }
+//            Log.d("InferenceResult", "onCreate: $inferenceResult")
+//            //Text(inferenceResult)
+//        }
+//    }
+//
+//}
 
